@@ -25,6 +25,18 @@ body {
   color: #222222 !important ;
 }
 
+/* Filter */
+.filter {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+}
+
+.filter:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
 /* Footer */
 .f-info-links a {
   text-decoration: none;

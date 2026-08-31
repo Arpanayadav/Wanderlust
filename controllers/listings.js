@@ -5,7 +5,24 @@ const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 module.exports.index = async (req, res) => {
-  const allListings = await Listing.find({});
+  let filter = {};
+
+  // 1. Handle Category Filtering (Trending, Mountains, etc.)
+  if (req.query.category) {
+    filter.category = req.query.category;
+  }
+
+  // 2. Handle Text Search (Title, Location, or Country)
+  if (req.query.search) {
+    let searchString = req.query.search.trim();
+    filter.$or = [
+      { title: { $regex: searchString, $options: "i" } },
+      { location: { $regex: searchString, $options: "i" } },
+      { country: { $regex: searchString, $options: "i" } },
+    ];
+  }
+
+  const allListings = await Listing.find(filter);
   res.render("listings/index.ejs", { allListings });
 };
 

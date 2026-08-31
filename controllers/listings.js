@@ -8,23 +8,18 @@ const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 const allListings = await Listing.find({});
 res.render("listings/index.ejs", { allListings });
 // };
+// controllers/listings.js
 module.exports.index = async (req, res) => {
   const { category } = req.query;
-  let allListings;
+  let filter = {};
 
   if (category) {
-    allListings = await Listing.find({ category: category });
-
-    // Optional: Flash message and redirect if category has 0 items
-    if (allListings.length === 0) {
-      req.flash("error", `No listings found for category: "${category}"`);
-      return res.redirect("/listings");
-    }
-  } else {
-    allListings = await Listing.find({});
+    // Case-insensitive match to handle any lowercase/uppercase variations
+    filter.category = { $regex: new RegExp(`^${category}$`, "i") };
   }
 
-  res.render("listings/index.ejs", { allListings });
+  const allListings = await Listing.find(filter);
+  res.render("listings/index.ejs", { allListings, category });
 };
 
 module.exports.renderNewForm = (req, res) => {
